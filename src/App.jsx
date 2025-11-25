@@ -1,4 +1,4 @@
-import './App.css'
+import './App.css';
 import TodoList from './Todolist';
 import TodoForm from './TodoForm';
 
@@ -9,7 +9,7 @@ function App() {
       <TodoForm />
       <TodoList />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
