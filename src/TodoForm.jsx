@@ -11,7 +11,7 @@ function TodoForm({ onAddTodo }) {
   }
   return (
     <form onSubmit={handleAddTodo}>
-      <label htmlFor="todoTitle">Todo1</label>
+      <label htmlFor="todoTitle">Todo</label>
       <input
         ref={todoTitleInput}
         type="text"
