@@ -19,9 +19,11 @@ function TodoForm({ onAddTodo }) {
         name="title"
         placeholder="add a title"
         value={workingTodoTitle}
-        onChange={(event) => {setWorkingTodoTitle(event.target.value);}}
+        onChange={(event) => {
+          setWorkingTodoTitle(event.target.value);
+        }}
       />
-      <input type="submit" value="Add Todo"/>
+      <input type="submit" value="Add Todo" disabled={workingTodoTitle === ''} />
     </form>
   );
 }
