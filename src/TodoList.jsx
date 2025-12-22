@@ -1,7 +1,7 @@
 import TodoListItem from './TodoListItem';
 
 function TodoList({todoList, onCompleteTodo}) {
-  const isEmpty = todoList.length == 0;
+  const isEmpty = !todoList.length;
   return (
     <>
       {isEmpty ? (

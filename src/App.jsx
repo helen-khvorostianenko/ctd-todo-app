@@ -16,16 +16,15 @@ function App() {
 
   function completeTodo(id) {
     const updatedTodos = todoList.map((item) => {
-      if (item.id == id) {
+      if (item.id === id) {
         return ({...item, isCompleted: true});
-      } else {
-        return item;
-      }
+      } 
+      return item;
     });
     setTodoList(updatedTodos);
   }
 
-  const filteredTodoList = todoList.filter((item) => item.isCompleted !== true);
+  const filteredTodoList = todoList.filter((item) => item.isCompleted === false);
   
   return (
     <div>

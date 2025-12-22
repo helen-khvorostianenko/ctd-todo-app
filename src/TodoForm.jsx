@@ -23,7 +23,7 @@ function TodoForm({ onAddTodo }) {
           setWorkingTodoTitle(event.target.value);
         }}
       />
-      <input type="submit" value="Add Todo" disabled={workingTodoTitle === ''} />
+      <input type="submit" value="Add Todo" disabled={!workingTodoTitle} />
     </form>
   );
 }
