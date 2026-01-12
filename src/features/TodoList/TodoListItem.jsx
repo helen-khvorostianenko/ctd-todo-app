@@ -23,7 +23,6 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
     event.preventDefault();
     setWorkingTitle(event.target.value)
   }
-  handleEdit
   return (
     <li>
       <form id={todo.id}>
