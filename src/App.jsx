@@ -36,7 +36,8 @@ function App() {
         });
         setTodoList([...fetchedRows]);
       } catch(error) {
-        setErrorMessage(error.message);
+        const message = error instanceof Error ? error.message : String(error);
+        setErrorMessage(message);
       } finally {
         setIsLoading(false);
       }
@@ -92,6 +93,15 @@ function App() {
         onUpdateTodo={updateTodo}
         isLoading={isLoading}
       />
+      {errorMessage.length > 0 ? (
+        <div>
+          <hr />
+          <p>{errorMessage}</p>
+          <button onClick={() => setErrorMessage('')}>Dismiss</button>
+        </div>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 }
