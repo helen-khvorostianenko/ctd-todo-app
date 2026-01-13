@@ -82,6 +82,7 @@ function App() {
       setTodoList([...todoList, savedTodo]);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
+      console.log(message);
       setErrorMessage(message);
     } finally {
       setIsSaving(false);
@@ -98,19 +99,51 @@ function App() {
     setTodoList(updatedTodos);
   }
 
-  function updateTodo(editedTodo) {
-    const updatedTodos = todoList.map(
-      (item) => {
-        console.log(item);
-        
-        if (item.id === editedTodo.id) {
-          return {...editedTodo};
-        } else {
-          return item;
-        }
+  const updateTodo = async (editedTodo) => {
+    const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
+    const updatedTodos = todoList.map((item) => {
+      if (item.id === editedTodo.id) {
+        return { ...editedTodo };
+      } else {
+        return item;
       }
-    );
+    });
     setTodoList(updatedTodos);
+    
+    const payload = {
+      records: [
+        {
+          id: editedTodo.id,
+          fields: {
+            title: editedTodo.title,
+            isCompleted: editedTodo.isCompleted,
+          },
+        },
+      ],
+    };
+    const options = {
+      method: 'PATCH',
+      headers: {
+        Authorization: token,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    };
+    
+     try {
+       const resp = await fetch(url, options);
+       if (!resp.ok) {
+         throw new Error(resp.message);
+       }
+     } catch (error) {
+       const message = error instanceof Error ? error.message : String(error);
+       console.log(message);
+       setErrorMessage(message);
+       const revertedTodos = originalTodo;
+       setTodoList([...revertedTodos]);
+     } finally {
+       setIsSaving(false);
+     }
   }
 
   const filteredTodoList = todoList.filter(
