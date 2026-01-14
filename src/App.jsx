@@ -89,7 +89,8 @@ function App() {
     }
   }
 
-  function completeTodo(id) {
+  const completeTodo = async(id) => {
+    const originalTodos = todoList;
     const updatedTodos = todoList.map((item) => {
       if (item.id === id) {
         return { ...item, isCompleted: true };
@@ -97,6 +98,41 @@ function App() {
       return item;
     });
     setTodoList(updatedTodos);
+   
+    const completedTodo = updatedTodos.find((item) => item.id === id);
+    if (!completedTodo) return;
+    
+    const payload = {
+      records: [
+        {
+          id: completedTodo.id,
+          fields: {
+            title: completedTodo.title,
+            isCompleted: true,
+          },
+        },
+      ],
+    };
+    const options = {
+      method: 'PATCH',
+      headers: {
+        Authorization: token,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    };
+
+    try {
+      const resp = await fetch(url, options);
+      if (!resp.ok) {
+        throw new Error(resp.message);
+      }
+    } catch (error) {
+      setTodoList(originalTodos);
+      const message = error instanceof Error ? error.message : String(error);
+      console.log(message);
+      setErrorMessage(message);
+    }
   }
 
   const updateTodo = async (editedTodo) => {
@@ -109,7 +145,7 @@ function App() {
       }
     });
     setTodoList(updatedTodos);
-    
+
     const payload = {
       records: [
         {
@@ -141,8 +177,6 @@ function App() {
        setErrorMessage(message);
        const revertedTodos = originalTodo;
        setTodoList([...revertedTodos]);
-     } finally {
-       setIsSaving(false);
      }
   }
 
