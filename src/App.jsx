@@ -172,11 +172,13 @@ function App() {
          throw new Error(resp.message);
        }
      } catch (error) {
-       const message = error instanceof Error ? error.message : String(error);
-       console.log(message);
-       setErrorMessage(message);
-       const revertedTodos = originalTodo;
-       setTodoList([...revertedTodos]);
+        const message = error instanceof Error ? error.message : String(error);
+        console.log(message);
+        setErrorMessage(`${message}. Reverting todo...`);
+        const revertedTodos = updatedTodos.map((item) =>
+          item.id === editedTodo.id ? originalTodo : item
+        );
+        setTodoList([...revertedTodos]);
      }
   }
 
