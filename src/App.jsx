@@ -2,6 +2,8 @@ import './App.css';
 import { useState, useEffect } from 'react';
 import TodoList from './features/TodoList/TodoList';
 import TodoForm from './features/TodoForm';
+import { airtableUrl, airtableToken } from './api/airtableConfig';
+import { createAirtableClient } from './api/airtableClient';
 
 function App() {
   const [todoList, setTodoList] = useState([]);
@@ -10,48 +12,16 @@ function App() {
   const [isSaving, setIsSaving] = useState(false);
   const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
-
-  const getErrorByStatus = (status) => {
-    if (status === 401) return 'Authorization failed. Please check your API token.';
-    if (status === 403) return "Access denied. You don't have permission.";
-    if (status === 404) return 'Resource not found.';
-    if (status === 429) return 'Too many requests. Please wait and try again.';
-    if (status >= 500) return 'Server error. Please try again later.';
-    return 'Request failed. Please try again.';
-  };
-  const fetchData = async function (method = 'GET', extraHeaders = {}, extraOptions = {}) {
-    const headers = {
-      Authorization: token,
-      ...extraHeaders,
-    };
-    const options = {
-      method: method,
-      headers: headers,
-      ...extraOptions,
-    };
-
-    let response;
-    try {
-      response = await fetch(url, options);
-    } catch (e) {
-      throw new Error(
-        'Network error. Check your internet connection and try again.'
-      );
-    }
-    if (!response.ok) {
-      console.error('API error:', response.status, response.statusText);
-      throw new Error(getErrorByStatus(response.status));
-    }
-    const data = await response.json();
-    const records = Array.isArray(data?.records) ? data.records : [];
-    return records;
-  };
+  const airtable = createAirtableClient({
+    url: airtableUrl,
+    token: airtableToken,
+   });
 
   useEffect(() => {
     const fetchTodos = async () => {
       setIsLoading(true);
       try { 
-        const records = await fetchData();
+        const records = await airtable.request();
         const fetchedRows = records.map((record) => {
           const row = {
             id: record.id,
@@ -84,7 +54,7 @@ function App() {
     };
     try {
       setIsSaving(true);
-      const records = await fetchData(
+      const records = await airtable.request(
         'POST',
         {
           'Content-Type': 'application/json',
@@ -137,7 +107,7 @@ function App() {
       ],
     };
     try {
-      await fetchData(
+      await airtable.request(
         'PATCH',
         {
           'Content-Type': 'application/json',
@@ -177,7 +147,7 @@ function App() {
     };
 
     try {
-    await fetchData(
+    await airtable.request(
       'PATCH',
       {
         'Content-Type': 'application/json',
