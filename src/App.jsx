@@ -11,6 +11,14 @@ function App() {
   const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
+  const getErrorByStatus = (status) => {
+    if (status === 401) return 'Authorization failed. Please check your API token.';
+    if (status === 403) return "Access denied. You don't have permission.";
+    if (status === 404) return 'Resource not found.';
+    if (status === 429) return 'Too many requests. Please wait and try again.';
+    if (status >= 500) return 'Server error. Please try again later.';
+    return 'Request failed. Please try again.';
+  };
   const fetchData = async function (method = 'GET', extraHeaders = {}, extraOptions = {}) {
     const headers = {
       Authorization: token,
@@ -21,11 +29,18 @@ function App() {
       headers: headers,
       ...extraOptions,
     };
-    const response = await fetch(url, options);
-    if (!response.ok) {
+
+    let response;
+    try {
+      response = await fetch(url, options);
+    } catch (e) {
       throw new Error(
-        `Request failed: ${response.status} ${response.statusText}`
+        'Network error. Check your internet connection and try again.'
       );
+    }
+    if (!response.ok) {
+      console.error('API error:', response.status, response.statusText);
+      throw new Error(getErrorByStatus(response.status));
     }
     const data = await response.json();
     const records = Array.isArray(data?.records) ? data.records : [];
