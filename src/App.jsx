@@ -11,31 +11,41 @@ function App() {
   const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
+  const fetchData = async function (method = 'GET', extraHeaders = {}, extraOptions = {}) {
+    const headers = {
+      Authorization: token,
+      ...extraHeaders,
+    };
+    const options = {
+      method: method,
+      headers: headers,
+      ...extraOptions,
+    };
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(
+        `Request failed: ${response.status} ${response.statusText}`
+      );
+    }
+    const data = await response.json();
+    const records = Array.isArray(data?.records) ? data.records : [];
+    return records;
+  };
+
   useEffect(() => {
     const fetchTodos = async () => {
       setIsLoading(true);
-      const options = {
-        method: 'GET',
-        headers: { Authorization: token },
-      };
       try { 
-        const resp = await fetch(url, options);
-        if(!resp.ok) {
-          throw new Error(resp.message);
-        }
-
-        const { records } = await resp.json();
+        const records = await fetchData();
         const fetchedRows = records.map((record) => {
           const row = {
             id: record.id,
             ...record.fields,
           };
-          if (!row.isCompleted) {
-            row.isCompleted = false;
-          }
+          row.isCompleted = row.isCompleted ?? false;
           return row;
         });
-        setTodoList([...fetchedRows]);
+        setTodoList(fetchedRows);
       } catch(error) {
         const message = error instanceof Error ? error.message : String(error);
         setErrorMessage(message);
@@ -52,26 +62,24 @@ function App() {
         {
           fields:{
             title: title,
-          isCompleted: false,
+            isCompleted: false,
           }
         },
       ],
     };
-    const options = {
-      method: 'POST',
-      headers: { 
-        Authorization: token,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload)
-    };
     try {
       setIsSaving(true);
-      const resp = await fetch(url, options);
-      if (!resp.ok) {
-        throw new Error(resp.message);
+      const records = await fetchData(
+        'POST',
+        {
+          'Content-Type': 'application/json',
+        },
+        { body: JSON.stringify(payload) }
+      );
+
+      if (!records[0]) {
+        throw new Error('No records returned from Airtable API');
       }
-      const { records } = await resp.json();
       const savedTodo = {
         id: records[0].id,
         ... records[0].fields,
@@ -113,20 +121,14 @@ function App() {
         },
       ],
     };
-    const options = {
-      method: 'PATCH',
-      headers: {
-        Authorization: token,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    };
-
     try {
-      const resp = await fetch(url, options);
-      if (!resp.ok) {
-        throw new Error(resp.message);
-      }
+      await fetchData(
+        'PATCH',
+        {
+          'Content-Type': 'application/json',
+        },
+        { body: JSON.stringify(payload) }
+      );
     } catch (error) {
       setTodoList(originalTodos);
       const message = error instanceof Error ? error.message : String(error);
@@ -137,6 +139,7 @@ function App() {
 
   const updateTodo = async (editedTodo) => {
     const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
+    if (!originalTodo) return;
     const updatedTodos = todoList.map((item) => {
       if (item.id === editedTodo.id) {
         return { ...editedTodo };
@@ -157,29 +160,24 @@ function App() {
         },
       ],
     };
-    const options = {
-      method: 'PATCH',
-      headers: {
-        Authorization: token,
+
+    try {
+    await fetchData(
+      'PATCH',
+      {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload),
-    };
-    
-     try {
-       const resp = await fetch(url, options);
-       if (!resp.ok) {
-         throw new Error(resp.message);
-       }
-     } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        console.log(message);
-        setErrorMessage(`${message}. Reverting todo...`);
-        const revertedTodos = updatedTodos.map((item) =>
-          item.id === editedTodo.id ? originalTodo : item
-        );
-        setTodoList([...revertedTodos]);
-     }
+      { body: JSON.stringify(payload) }
+    );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.log(message);
+      setErrorMessage(`${message}. Reverting todo...`);
+      const revertedTodos = updatedTodos.map((item) =>
+        item.id === editedTodo.id ? originalTodo : item
+      );
+      setTodoList([...revertedTodos]);
+    }
   }
 
   const filteredTodoList = todoList.filter(
