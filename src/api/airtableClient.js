@@ -1,11 +1,26 @@
 const getErrorByStatus = (status) => {
-  if (status === 401)
-    return 'Authorization failed. Please check your API token.';
-  if (status === 403) return "Access denied. You don't have permission.";
-  if (status === 404) return 'Resource not found.';
-  if (status === 429) return 'Too many requests. Please wait and try again.';
-  if (status >= 500) return 'Server error. Please try again later.';
-  return 'Request failed. Please try again.';
+  let message = '';
+  switch (status) {
+    case 401:
+      message = 'Authorization failed. Please check your API token.';
+      break;
+    case 403:
+      message = "Access denied. You don't have permission.";
+      break;
+    case 404:
+      message = 'Resource not found.';
+      break;
+    case 429:
+      message = 'Too many requests. Please wait and try again.';
+      break;
+    case status >= 500:
+      message = 'Server error. Please try again later.';
+    default: 
+      message = 'Request failed. Please try again.';
+      break;
+  }
+
+  return message;
 };
 
 export const createAirtableClient = ({ url, token }) => {
