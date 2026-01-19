@@ -5,20 +5,22 @@ import TodoForm from './features/TodoForm';
 import { airtableUrl, airtableToken } from './api/airtableConfig';
 import { createAirtableClient } from './api/airtableClient';
 
+const airtable = createAirtableClient({
+  url: airtableUrl,
+  token: airtableToken,
+});
+
+
 function App() {
   const [todoList, setTodoList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const airtable = createAirtableClient({
-    url: airtableUrl,
-    token: airtableToken,
-   });
 
   useEffect(() => {
     const fetchTodos = async () => {
       setIsLoading(true);
-      try { 
+      try {
         const records = await airtable.request();
         const fetchedRows = records.map((record) => {
           const row = {
@@ -29,7 +31,7 @@ function App() {
           return row;
         });
         setTodoList(fetchedRows);
-      } catch(error) {
+      } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         setErrorMessage(message);
       } finally {
@@ -70,7 +72,7 @@ function App() {
       if (!records[0].fields.isCompleted) {
         savedTodo.isCompleted = false;
       }
-      setTodoList([...todoList, savedTodo]);
+      setTodoList((prevTodoList) => [...prevTodoList, savedTodo]);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       console.log(message);
