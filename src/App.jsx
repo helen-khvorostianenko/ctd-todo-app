@@ -1,20 +1,89 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TodoList from './features/TodoList/TodoList';
 import TodoForm from './features/TodoForm';
+import { airtableUrl, airtableToken } from './api/airtableConfig';
+import { createAirtableClient } from './api/airtableClient';
+
+const airtable = createAirtableClient({
+  url: airtableUrl,
+  token: airtableToken,
+});
+
 
 function App() {
   const [todoList, setTodoList] = useState([]);
-  function addTodo(title) {
-    const newTodo = {
-      id: Date.now(),
-      title: title,
-      isCompleted: false,
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const fetchTodos = async () => {
+      setIsLoading(true);
+      try {
+        const records = await airtable.request();
+        const fetchedRows = records.map((record) => {
+          const row = {
+            id: record.id,
+            ...record.fields,
+          };
+          row.isCompleted = row.isCompleted ?? false;
+          return row;
+        });
+        setTodoList(fetchedRows);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        setErrorMessage(message);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    setTodoList([...todoList, newTodo]);
+    fetchTodos();
+  }, []);
+
+  const addTodo = async (title) => {
+    const payload = {
+      records: [
+        {
+          fields:{
+            title: title,
+            isCompleted: false,
+          }
+        },
+      ],
+    };
+    try {
+      setIsSaving(true);
+      const records = await airtable.request(
+        'POST',
+        {
+          'Content-Type': 'application/json',
+        },
+        { body: JSON.stringify(payload) }
+      );
+
+      if (!records[0]) {
+        throw new Error('No records returned from Airtable API');
+      }
+      const savedTodo = {
+        id: records[0].id,
+        ... records[0].fields,
+      };
+      if (!records[0].fields.isCompleted) {
+        savedTodo.isCompleted = false;
+      }
+      setTodoList((prevTodoList) => [...prevTodoList, savedTodo]);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.log(message);
+      setErrorMessage(message);
+    } finally {
+      setIsSaving(false);
+    }
   }
 
-  function completeTodo(id) {
+  const completeTodo = async(id) => {
+    const originalTodos = todoList;
     const updatedTodos = todoList.map((item) => {
       if (item.id === id) {
         return { ...item, isCompleted: true };
@@ -22,21 +91,78 @@ function App() {
       return item;
     });
     setTodoList(updatedTodos);
+   
+    const completedTodo = updatedTodos.find((item) => item.id === id);
+    if (!completedTodo) return;
+    
+    const payload = {
+      records: [
+        {
+          id: completedTodo.id,
+          fields: {
+            title: completedTodo.title,
+            isCompleted: true,
+          },
+        },
+      ],
+    };
+    try {
+      await airtable.request(
+        'PATCH',
+        {
+          'Content-Type': 'application/json',
+        },
+        { body: JSON.stringify(payload) }
+      );
+    } catch (error) {
+      setTodoList(originalTodos);
+      const message = error instanceof Error ? error.message : String(error);
+      console.log(message);
+      setErrorMessage(message);
+    }
   }
 
-  function updateTodo(editedTodo) {
-    const updatedTodos = todoList.map(
-      (item) => {
-        console.log(item);
-        
-        if (item.id === editedTodo.id) {
-          return {...editedTodo};
-        } else {
-          return item;
-        }
+  const updateTodo = async (editedTodo) => {
+    const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
+    if (!originalTodo) return;
+    const updatedTodos = todoList.map((item) => {
+      if (item.id === editedTodo.id) {
+        return { ...editedTodo };
+      } else {
+        return item;
       }
-    );
+    });
     setTodoList(updatedTodos);
+
+    const payload = {
+      records: [
+        {
+          id: editedTodo.id,
+          fields: {
+            title: editedTodo.title,
+            isCompleted: editedTodo.isCompleted,
+          },
+        },
+      ],
+    };
+
+    try {
+    await airtable.request(
+      'PATCH',
+      {
+        'Content-Type': 'application/json',
+      },
+      { body: JSON.stringify(payload) }
+    );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.log(message);
+      setErrorMessage(`${message}. Reverting todo...`);
+      const revertedTodos = updatedTodos.map((item) =>
+        item.id === editedTodo.id ? originalTodo : item
+      );
+      setTodoList([...revertedTodos]);
+    }
   }
 
   const filteredTodoList = todoList.filter(
@@ -46,12 +172,22 @@ function App() {
   return (
     <div>
       <h1>Todo List</h1>
-      <TodoForm onAddTodo={addTodo} />
+      <TodoForm onAddTodo={addTodo} isSaving={isSaving} />
       <TodoList
         todoList={filteredTodoList}
         onCompleteTodo={completeTodo}
         onUpdateTodo={updateTodo}
+        isLoading={isLoading}
       />
+      {errorMessage.length > 0 ? (
+        <div>
+          <hr />
+          <p>{errorMessage}</p>
+          <button onClick={() => setErrorMessage('')}>Dismiss</button>
+        </div>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 }
