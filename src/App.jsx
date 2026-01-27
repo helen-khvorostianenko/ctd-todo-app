@@ -1,19 +1,10 @@
 import './App.css';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import TodoList from './features/TodoList/TodoList';
 import TodoForm from './features/TodoForm';
 import TodosViewForm from './features/TodosViewForm';
 import { airtableUrl, airtableToken } from './api/airtableConfig';
 import { createAirtableClient } from './api/airtableClient';
-
-const encodeUrl = ({ sortField, sortDirection, queryString }) => {
-  let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-  let searchQuery = '';
-  if (queryString?.trim()) {
-    searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
-  }
-  return encodeURI(`${airtableUrl}?${sortQuery}${searchQuery}`);
-};
 
 function App() {
   const [todoList, setTodoList] = useState([]);
@@ -23,10 +14,19 @@ function App() {
   const [sortField, setSortField] = useState('createdTime');
   const [sortDirection, setSortDirection] = useState('desc');
   const [queryString, setQueryString] = useState('');
+  
+  const encodeUrl = useCallback(() => {
+    let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
+    let searchQuery = '';
+    if (queryString?.trim()) {
+      searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
+    }
+    return encodeURI(`${airtableUrl}?${sortQuery}${searchQuery}`);
+  }, [sortField, sortDirection, queryString]);
 
   const airtable = useMemo(() => {
     return createAirtableClient({
-      url: encodeUrl({ sortField, sortDirection, queryString }),
+      url: encodeUrl(),
       token: airtableToken,
     });
   }, [sortField, sortDirection, queryString]);
