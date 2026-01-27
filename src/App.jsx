@@ -53,7 +53,7 @@ function App() {
       }
     };
     fetchTodos();
-  }, [sortField, sortDirection, queryString]);
+  }, [airtable]);
 
   const addTodo = async (title) => {
     const payload = {
