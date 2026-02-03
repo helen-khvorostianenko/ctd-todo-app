@@ -11,17 +11,20 @@ function TodoForm({ onAddTodo, isSaving }) {
     todoTitleInput.current.focus();
   }
   return (
-    <form onSubmit={handleAddTodo}>
+    <form className="addForm" onSubmit={handleAddTodo}>
       <TextInputWithLabel
         elementId={'todoTitle'}
-        label={'Todo'}
+        label={'+ Todo'}
         ref={todoTitleInput}
         value={workingTodoTitle}
         onChange={(event) => {
           setWorkingTodoTitle(event.target.value);
         }}
       />
-      <button disabled={workingTodoTitle.trim() === ''}>
+      <button
+        className="btn btnPrimary"
+        disabled={workingTodoTitle.trim() === ''}
+      >
         {isSaving ? 'Saving...' : 'Add Todo'}
       </button>
     </form>

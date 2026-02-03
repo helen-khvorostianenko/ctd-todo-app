@@ -184,30 +184,36 @@ function App() {
   );
 
   return (
-    <div>
-      <h1>Todo List</h1>
-      <TodoForm onAddTodo={addTodo} isSaving={isSaving} />
-      <TodoList
-        todoList={filteredTodoList}
-        onCompleteTodo={completeTodo}
-        onUpdateTodo={updateTodo}
-        isLoading={isLoading}
-      />
-      <hr />
-      <TodosViewForm
-        sortDirection={sortDirection}
-        setSortDirection={setSortDirection}
-        sortField={sortField}
-        setSortField={setSortField}
-        queryString={queryString}
-        setQueryString={setQueryString}
-      />
+    <div className="container">
+      <h1 className="title">Todo List App</h1>
+      <section className="panel">
+        <TodoForm onAddTodo={addTodo} isSaving={isSaving} />
+      </section>
+      <section className="panel">
+        <TodoList
+          todoList={filteredTodoList}
+          onCompleteTodo={completeTodo}
+          onUpdateTodo={updateTodo}
+          isLoading={isLoading}
+        />
+      </section>
+      <section className="panel">
+        <TodosViewForm
+          sortDirection={sortDirection}
+          setSortDirection={setSortDirection}
+          sortField={sortField}
+          setSortField={setSortField}
+          queryString={queryString}
+          setQueryString={setQueryString}
+        />
+      </section>
       {errorMessage.length > 0 ? (
-        <div>
-          <hr />
-          <p>{errorMessage}</p>
-          <button onClick={() => setErrorMessage('')}>Dismiss</button>
-        </div>
+        <section className="panel error">
+          <p className="errorText">{errorMessage}</p>
+          <button className="btn btnGhost" onClick={() => setErrorMessage('')}>
+            Dismiss
+          </button>
+        </section>
       ) : (
         <div></div>
       )}

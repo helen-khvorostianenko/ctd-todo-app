@@ -10,7 +10,7 @@ function TodoList({ todoList, onCompleteTodo, onUpdateTodo, isLoading}) {
     return <p>Add todo above to get started</p>;
   }
   return (
-    <ul>
+    <ul className="todoList">
       {todoList.map((todo) => (
         <TodoListItem
           key={todo.id}

@@ -29,27 +29,45 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
     setWorkingTitle(event.target.value)
   }
   return (
-    <li>
-      <form id={todo.id}>
+    <li className="todoItem">
+      <form
+        className={isEditing ? 'todoItemForm isEditing' : 'todoItemForm'}
+        id={todo.id}
+      >
         {isEditing ? (
           <>
             <TextInputWithLabel
-              elementId={'todo-title-${todo.id}'}
+              elementId={`todo-title-${todo.id}`}
               value={workingTitle}
               onChange={handleEdit}
             />
-            <input type="button" value="Cancel" onClick={handleCancel} />
-            <input type="button" value="Update" onClick={handleUpdate} />
+            <div className="todoItemActions">
+              <input
+                className="btn btnGhost"
+                type="button"
+                value="Cancel"
+                onClick={handleCancel}
+              />
+              <input
+                className="btn btnPrimary"
+                type="button"
+                value="Update"
+                onClick={handleUpdate}
+              />
+            </div>
           </>
         ) : (
           <>
             <input
+              className="todoCheckbox"
               type="checkbox"
               name="item"
               checked={todo.isCompleted}
               onChange={() => onCompleteTodo(todo.id)}
             />
-            <span onClick={() => setIsEditing(true)}>{todo.title}</span>
+            <span className="todoText" onClick={() => setIsEditing(true)}>
+              {todo.title}
+            </span>
           </>
         )}
       </form>
