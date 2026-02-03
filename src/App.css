@@ -28,33 +28,6 @@ body{
   padding: 40px 18px;
 }
 
-.container{
-  width: min(920px, 100%);
-}
-
-.title{
-  margin:0 0 18px;
-  font-size: 56px;
-  letter-spacing: -0.03em;
-}
-
-.panel{
-  border:1px solid var(--border);
-  background: var(--panel);
-  border-radius: 18px;
-  padding: 16px;
-  margin-bottom: 14px;
-}
-
-.panel.error{
-  border-color: rgba(239,68,68,.28);
-}
-
-.errorText{
-  margin:0 0 10px;
-  color: rgba(255,255,255,.86);
-}
-
 .input, .select,
 input[type="text"], input[type="search"], select{
   width:100%;
@@ -127,58 +100,6 @@ input:focus, select:focus{
   color: var(--muted);
 }
 
-.todoList{
-  list-style:none;
-  margin:0;
-  padding:0;
-  display:grid;
-  gap: 14px;
-}
-
-.todoItem{
-  border:1px solid var(--border);
-  background: rgba(255,255,255,.03);
-  border-radius: 18px;
-  padding: 10px 12px;
-}
-
-.todoItemForm{
-  display:flex;
-  align-items:center;
-  gap: 12px;
-  width:100%;
-}
-
-.todoCheckbox{
-  width: 18px;
-  height: 18px;
-  flex: 0 0 auto;
-  accent-color: var(--blue);
-}
-
-.todoText{
-  flex: 1 1 auto;
-  min-width:0;
-  font-weight: 800;
-  cursor:pointer;
-}
-
-.todoItemForm.isEditing label{
-  display:none;
-}
-
-.todoItemForm.isEditing input[type="text"]{
-  border: none;          
-  box-shadow: none;      
-  flex: 1 1 auto;
-  min-width:0;
-}
-
-.todoItemActions{
-  display:flex;
-  gap: 10px;
-  flex: 0 0 auto;
-}
 
 .viewForm{
   display:grid;

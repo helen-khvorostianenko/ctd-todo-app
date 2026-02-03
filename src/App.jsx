@@ -1,4 +1,5 @@
 import './App.css';
+import styles from './App.module.css';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import TodoList from './features/TodoList/TodoList';
 import TodoForm from './features/TodoForm';
@@ -184,12 +185,12 @@ function App() {
   );
 
   return (
-    <div className="container">
-      <h1 className="title">Todo List App</h1>
-      <section className="panel">
+    <div className={styles.container}>
+      <h1 className={styles.title}>Todo List App</h1>
+      <section className={styles.panel}>
         <TodoForm onAddTodo={addTodo} isSaving={isSaving} />
       </section>
-      <section className="panel">
+      <section className={styles.panel}>
         <TodoList
           todoList={filteredTodoList}
           onCompleteTodo={completeTodo}
@@ -197,7 +198,7 @@ function App() {
           isLoading={isLoading}
         />
       </section>
-      <section className="panel">
+      <section className={styles.panel}>
         <TodosViewForm
           sortDirection={sortDirection}
           setSortDirection={setSortDirection}
@@ -208,8 +209,8 @@ function App() {
         />
       </section>
       {errorMessage.length > 0 ? (
-        <section className="panel error">
-          <p className="errorText">{errorMessage}</p>
+        <section className={`${styles.panel} ${styles.error}`}>
+          <p className={styles.errorText}>{errorMessage}</p>
           <button className="btn btnGhost" onClick={() => setErrorMessage('')}>
             Dismiss
           </button>
