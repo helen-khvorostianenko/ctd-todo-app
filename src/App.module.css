@@ -24,3 +24,7 @@
   margin:0 0 10px;
   color: rgba(255,255,255,.86);
 }
+
+@media (max-width: 760px){
+  .title{ font-size: 42px; }
+}

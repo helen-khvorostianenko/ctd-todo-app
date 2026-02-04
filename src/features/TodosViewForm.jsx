@@ -1,4 +1,42 @@
 import { useState, useEffect } from "react";
+import styled from "styled-components";
+
+const StyledForm = styled.form`
+  display: grid;
+  gap: 12px;
+
+  #search {
+    flex: 1;
+    min-width: 260px;
+  }
+`;
+const StyledRow = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+`;
+const StyledRow2 = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: end;
+
+  @media (max-width: 760px) {
+    grid-template-columns: 1fr;
+  }
+`;
+const StyledField = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+
+const StyledLabel = styled.label`
+  color: var(--muted);
+  font-weight: 700;
+`;
+
 
 function TodosViewForm({
   sortDirection,
@@ -22,11 +60,9 @@ function TodosViewForm({
     e.preventDefault();
   }
   return (
-    <form className="viewForm" onSubmit={preventRefresh}>
-      <div className="row">
-        <label className="label" htmlFor="search">
-          Search todos:
-        </label>
+    <StyledForm onSubmit={preventRefresh}>
+      <StyledRow>
+        <StyledLabel htmlFor="search">Search todos:</StyledLabel>
         <input
           className="input"
           id="search"
@@ -43,12 +79,10 @@ function TodosViewForm({
         >
           Clear
         </button>
-      </div>
-      <div className="row row2">
-        <div className="field">
-          <label className="label" htmlFor="sotr-by">
-            Sort by
-          </label>
+      </StyledRow>
+      <StyledRow2>
+        <StyledField>
+          <StyledLabel htmlFor="sotr-by">Sort by</StyledLabel>
           <select
             className="select"
             id="sotr-by"
@@ -58,11 +92,9 @@ function TodosViewForm({
             <option value="title">{'Title'}</option>
             <option value="createdTime">{'Time added'}</option>
           </select>
-        </div>
-        <div className="field">
-          <label className="label" htmlFor="direction">
-            Direction
-          </label>
+        </StyledField>
+        <StyledField>
+          <StyledLabel htmlFor="direction">Direction</StyledLabel>
           <select
             className="select"
             id="direction"
@@ -72,9 +104,9 @@ function TodosViewForm({
             <option value="asc">{'Ascending'}</option>
             <option value="desc">{'Descending'}</option>
           </select>
-        </div>
-      </div>
-    </form>
+        </StyledField>
+      </StyledRow2>
+    </StyledForm>
   );
 }
 
