@@ -1,48 +1,48 @@
-.todoItem{
+.item{
   border:1px solid var(--border);
   background: rgba(255,255,255,.03);
   border-radius: 18px;
   padding: 10px 12px;
 }
 
-.todoItemForm{
+.itemForm{
   display:flex;
   align-items:center;
   gap: 12px;
   width:100%;
 }
 
-.todoCheckbox{
+.checkbox{
   width: 18px;
   height: 18px;
   flex: 0 0 auto;
   accent-color: var(--blue);
 }
 
-.todoText{
+.text{
   flex: 1 1 auto;
   min-width:0;
   font-weight: 800;
   cursor:pointer;
 }
 
-.todoItemForm.isEditing label{
+.itemForm.isEditing label{
   display:none;
 }
 
-.todoItemForm.isEditing input[type="text"]{
+.itemForm.isEditing input[type="text"]{
   border: none;          
   box-shadow: none;      
   flex: 1 1 auto;
   min-width:0;
 }
 
-.todoItemActions{
+.itemActions{
   display:flex;
   gap: 10px;
   flex: 0 0 auto;
 }
 
 @media (max-width: 760px){
-  .todoItemForm{ flex-wrap: wrap; }
+  .itemForm{ flex-wrap: wrap; }
 }

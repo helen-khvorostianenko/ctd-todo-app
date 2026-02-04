@@ -30,12 +30,12 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
     setWorkingTitle(event.target.value)
   }
   return (
-    <li className={styles.todoItem}>
+    <li className={styles.item}>
       <form
         className={
           isEditing
-            ? `${styles.todoItemForm} ${styles.isEditing}`
-            : `${styles.todoItemForm}`
+            ? `${styles.itemForm} ${styles.isEditing}`
+            : `${styles.itemForm}`
         }
         id={todo.id}
       >
@@ -46,7 +46,7 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
               value={workingTitle}
               onChange={handleEdit}
             />
-            <div className={styles.todoItemActions}>
+            <div className={styles.itemActions}>
               <input
                 className="btn btnGhost"
                 type="button"
@@ -64,13 +64,13 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
         ) : (
           <>
             <input
-              className={styles.todoCheckbox}
+              className={styles.checkbox}
               type="checkbox"
               name="item"
               checked={todo.isCompleted}
               onChange={() => onCompleteTodo(todo.id)}
             />
-            <span className={styles.todoText} onClick={() => setIsEditing(true)}>
+            <span className={styles.text} onClick={() => setIsEditing(true)}>
               {todo.title}
             </span>
           </>
