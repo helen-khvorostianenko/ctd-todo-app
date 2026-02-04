@@ -4,7 +4,7 @@
 
 .title{
   margin:0 0 18px;
-  font-size: 56px;
+  font-size: 46px;
   letter-spacing: -0.03em;
 }
 
@@ -23,6 +23,21 @@
 .errorText{
   margin:0 0 10px;
   color: rgba(255,255,255,.86);
+}
+
+.titleRow{
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoImg{
+  width: 64px;
+  height: 64px;
+  padding: 6px;
+  border-radius: 12px;
+  background: rgba(59,130,246,.12);
+  border: 1px solid rgba(59,130,246,.28);
 }
 
 @media (max-width: 760px){

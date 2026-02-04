@@ -1,5 +1,6 @@
 import './App.css';
 import styles from './App.module.css';
+import logo from './assets/todo-list-svgrepo-com.svg';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import TodoList from './features/TodoList/TodoList';
 import TodoForm from './features/TodoForm';
@@ -186,7 +187,12 @@ function App() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Todo List App</h1>
+      <h1 className={styles.title}>
+        <span className={styles.titleRow}>
+          <img className={styles.logoImg} src={logo} alt="Todo logo" />
+           Todo List App
+        </span>
+      </h1>
       <section className={styles.panel}>
         <TodoForm onAddTodo={addTodo} isSaving={isSaving} />
       </section>
