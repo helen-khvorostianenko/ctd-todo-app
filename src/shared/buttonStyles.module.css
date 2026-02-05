@@ -1,0 +1,5 @@
+.btnGhost{
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.16);
+}
+.btnGhost:hover{ background: rgba(255,255,255,.12); }

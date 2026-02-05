@@ -1,4 +1,6 @@
 import './App.css';
+import styles from './App.module.css';
+import logo from './assets/todo-list-svgrepo-com.svg';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import TodoList from './features/TodoList/TodoList';
 import TodoForm from './features/TodoForm';
@@ -184,30 +186,44 @@ function App() {
   );
 
   return (
-    <div>
-      <h1>Todo List</h1>
-      <TodoForm onAddTodo={addTodo} isSaving={isSaving} />
-      <TodoList
-        todoList={filteredTodoList}
-        onCompleteTodo={completeTodo}
-        onUpdateTodo={updateTodo}
-        isLoading={isLoading}
-      />
-      <hr />
-      <TodosViewForm
-        sortDirection={sortDirection}
-        setSortDirection={setSortDirection}
-        sortField={sortField}
-        setSortField={setSortField}
-        queryString={queryString}
-        setQueryString={setQueryString}
-      />
+    <div className={styles.container}>
+      <h1 className={styles.title}>
+        <span className={styles.titleRow}>
+          <img className={styles.logoImg} src={logo} alt="Todo logo" />
+          Todo List App
+        </span>
+      </h1>
+      <section className={styles.panel}>
+        <TodoForm onAddTodo={addTodo} isSaving={isSaving} />
+      </section>
+      <section className={styles.panel}>
+        <TodoList
+          todoList={filteredTodoList}
+          onCompleteTodo={completeTodo}
+          onUpdateTodo={updateTodo}
+          isLoading={isLoading}
+        />
+      </section>
+      <section className={styles.panel}>
+        <TodosViewForm
+          sortDirection={sortDirection}
+          setSortDirection={setSortDirection}
+          sortField={sortField}
+          setSortField={setSortField}
+          queryString={queryString}
+          setQueryString={setQueryString}
+        />
+      </section>
       {errorMessage.length > 0 ? (
-        <div>
-          <hr />
-          <p>{errorMessage}</p>
-          <button onClick={() => setErrorMessage('')}>Dismiss</button>
-        </div>
+        <section className={`${styles.panel} ${styles.error}`}>
+          <p className={styles.errorText}>{errorMessage}</p>
+          <button
+            className={`btn ${styles.ghostButton}`}
+            onClick={() => setErrorMessage('')}
+          >
+            Dismiss
+          </button>
+        </section>
       ) : (
         <div></div>
       )}
