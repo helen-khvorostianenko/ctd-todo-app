@@ -190,7 +190,7 @@ function App() {
       <h1 className={styles.title}>
         <span className={styles.titleRow}>
           <img className={styles.logoImg} src={logo} alt="Todo logo" />
-           Todo List App
+          Todo List App
         </span>
       </h1>
       <section className={styles.panel}>
@@ -217,7 +217,10 @@ function App() {
       {errorMessage.length > 0 ? (
         <section className={`${styles.panel} ${styles.error}`}>
           <p className={styles.errorText}>{errorMessage}</p>
-          <button className="btn btnGhost" onClick={() => setErrorMessage('')}>
+          <button
+            className={`btn ${styles.ghostButton}`}
+            onClick={() => setErrorMessage('')}
+          >
             Dismiss
           </button>
         </section>

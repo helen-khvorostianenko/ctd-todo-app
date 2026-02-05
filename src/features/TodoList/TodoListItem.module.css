@@ -43,6 +43,10 @@
   flex: 0 0 auto;
 }
 
+.ghostButton{
+   composes: btnGhost from '../../shared/buttonStyles.module.css';
+}
+
 @media (max-width: 760px){
   .itemForm{ flex-wrap: wrap; }
 }

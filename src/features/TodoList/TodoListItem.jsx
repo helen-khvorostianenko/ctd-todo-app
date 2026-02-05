@@ -48,7 +48,7 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
             />
             <div className={styles.itemActions}>
               <input
-                className="btn btnGhost"
+                className={`btn ${styles.ghostButton}`}
                 type="button"
                 value="Cancel"
                 onClick={handleCancel}

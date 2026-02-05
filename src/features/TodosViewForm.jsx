@@ -31,13 +31,10 @@ const StyledField = styled.div`
   flex-direction: column;
   gap: 6px;
 `;
-
 const StyledLabel = styled.label`
   color: var(--muted);
   font-weight: 700;
 `;
-
-
 function TodosViewForm({
   sortDirection,
   setSortDirection,
