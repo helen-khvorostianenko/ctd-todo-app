@@ -7,6 +7,7 @@ import TodoForm from './features/TodoForm';
 import TodosViewForm from './features/TodosViewForm';
 import { airtableUrl, airtableToken } from './api/airtableConfig';
 import { createAirtableClient } from './api/airtableClient';
+// import { reducer as todoReduser, actions, initialState as initialTodoState } from './reducers/todos.reducer';
 
 function App() {
   // Satte for managing todo list and UI state 
@@ -15,6 +16,7 @@ function App() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   
+  // const [todoState, dispatch] = useReducer(todoReduser, initialTodoState);
   const [sortField, setSortField] = useState('createdTime');
   const [sortDirection, setSortDirection] = useState('desc');
   const [queryString, setQueryString] = useState('');
