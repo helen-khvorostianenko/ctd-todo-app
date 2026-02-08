@@ -24,7 +24,7 @@ const actions = {
   clearError: 'clearError',
 };
 
-export const reducer = (state = initialState, action) => {
+const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actions.fetchTodos:
       return {
@@ -135,4 +135,4 @@ export const reducer = (state = initialState, action) => {
 
 }
 
-export { initialState, actions, reducer };
+export { initialState, actions, reducer};
