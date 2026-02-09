@@ -229,7 +229,7 @@ function App() {
       });
     }
   }
-
+  
   const filteredTodoList = todoState.todoList.filter(
     (item) => item.isCompleted === false
   );

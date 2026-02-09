@@ -26,7 +26,6 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
       setIsEditing(false);
   }
   function handleEdit(event) {
-    console.log(event.target.value)
     setWorkingTitle(event.target.value)
   }
   return (

@@ -95,12 +95,15 @@ const reducer = (state = initialState, action) => {
       const originalTodo = state.todoList.find(
         (todo) => todo.id === editedTodo.id
       );
+
       if (!originalTodo) return state;
 
       const updatedTodos = state.todoList.map((item) => {
-        item.id === editedTodo.id ? 
-          (action.error? {...originalTodo} : { ...editedTodo }) : 
-          item
+        if (item.id === editedTodo.id){
+          return (action.error? {...originalTodo} : { ...editedTodo }) 
+        } else {
+          return item;
+        }
       });
       const updatedState = {
         ...state,
@@ -110,7 +113,6 @@ const reducer = (state = initialState, action) => {
       if (action.error) {
         updatedState.errorMessage = action.error.message;
       }
-
       return updatedState;
     }
     case actions.completeTodo: {
