@@ -10,12 +10,7 @@ import { createAirtableClient } from './api/airtableClient';
 import { reducer as todoReduser, actions as todoActions, initialState as initialTodoState, actions } from './reducers/todos.reducer';
 
 function App() {
-  // Satte for managing todo list and UI state 
-  // const [todoList, setTodoList] = useState([]);
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [errorMessage, setErrorMessage] = useState("");
-  // const [isSaving, setIsSaving] = useState(false);
-  
+  // State for managing todo list and UI state   
   const [todoState, dispatchTodoActions] = useReducer(todoReduser, initialTodoState);
 
   const [sortField, setSortField] = useState('createdTime');
@@ -40,7 +35,6 @@ function App() {
 
   useEffect(() => {
     const fetchTodos = async () => {
-      // setIsLoading(true);
       dispatchTodoActions({type: todoActions.fetchTodos});
       try {
         const records = await airtable.request();
@@ -48,23 +42,12 @@ function App() {
           type: todoActions.loadTodos,
           records: records,
         });
-        // const fetchedRows = records.map((record) => {
-        //   const row = {
-        //     id: record.id,
-        //     ...record.fields,
-        //   };
-        //   row.isCompleted = row.isCompleted ?? false;
-        //   return row;
-        // });
-        // setTodoList(fetchedRows);
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         dispatchTodoActions({
           type: todoActions.setLoadError,
           error: err,
         });
-        // const message = error instanceof Error ? error.message : String(error);
-        // setErrorMessage(message);
       }
     };
     fetchTodos();
@@ -82,7 +65,6 @@ function App() {
       ],
     };
     try {
-      // setIsSaving(true);
       dispatchTodoActions({type: todoActions.startRequest});
       const records = await airtable.request(
         'POST',
@@ -91,50 +73,22 @@ function App() {
         },
         { body: JSON.stringify(payload) }
       );
-
-      // if (!records[0]) {
-      //   throw new Error('No records returned from Airtable API');
-      // }
-      // const savedTodo = {
-      //   id: records[0].id,
-      //   ... records[0].fields,
-      // };
-      // if (!records[0].fields.isCompleted) {
-      //   savedTodo.isCompleted = false;
-      // }
-      // setTodoList((prevTodoList) => [...prevTodoList, savedTodo]);
       dispatchTodoActions({
         type: todoActions.addTodo,
         records: records,
       });
     } catch (error) {
-      // const message = error instanceof Error ? error.message : String(error);
-      // console.log(message);
-      // setErrorMessage(message);
       const err = error instanceof Error ? error : new Error(String(error));
       dispatchTodoActions({
         type: todoActions.setLoadError,
         error: err,
       });
     } finally {
-      // setIsSaving(false);
        dispatchTodoActions({ type: todoActions.endRequest });
     }
   }
 
   const completeTodo = async(id) => {
-    // const originalTodos = todoList;
-    // const updatedTodos = todoList.map((item) => {
-    //   if (item.id === id) {
-    //     return { ...item, isCompleted: true };
-    //   }
-    //   return item;
-    // });
-    // setTodoList(updatedTodos);
-   
-    // const completedTodo = updatedTodos.find((item) => item.id === id);
-    // if (!completedTodo) return;
-    
     dispatchTodoActions({
       type: todoActions.completeTodo,
       id: id,
@@ -161,10 +115,6 @@ function App() {
         { body: JSON.stringify(payload) }
       );
     } catch (error) {
-      // setTodoList(originalTodos);
-      // const message = error instanceof Error ? error.message : String(error);
-      // console.log(message);
-      // setErrorMessage(message);
       const err = error instanceof Error ? error : new Error(String(error));
       dispatchTodoActions({
         type: todoActions.revertTodo,
@@ -175,17 +125,6 @@ function App() {
   }
 
   const updateTodo = async (editedTodo) => {
-    // const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
-    // if (!originalTodo) return;
-    // const updatedTodos = todoList.map((item) => {
-    //   if (item.id === editedTodo.id) {
-    //     return { ...editedTodo };
-    //   } else {
-    //     return item;
-    //   }
-    // });
-    // setTodoList(updatedTodos);
-
     dispatchTodoActions({
       type: todoActions.updateTodo,
       editedTodo: editedTodo,
@@ -212,15 +151,6 @@ function App() {
       { body: JSON.stringify(payload) }
     );
     } catch (error) {
-      console.log(error)
-      // const message = error instanceof Error ? error.message : String(error);
-      // console.log(message);
-      // setErrorMessage(`${message}. Reverting todo...`);
-      // const revertedTodos = updatedTodos.map((item) =>
-      //   item.id === editedTodo.id ? originalTodo : item
-      // );
-      // setTodoList([...revertedTodos]);
-      
       const err = error instanceof Error ? error : new Error(String(error));
       dispatchTodoActions({
         type: todoActions.revertTodo,
@@ -229,7 +159,7 @@ function App() {
       });
     }
   }
-  
+
   const filteredTodoList = todoState.todoList.filter(
     (item) => item.isCompleted === false
   );
