@@ -29,13 +29,11 @@ export const createAirtableClient = ({ url, token }) => {
       Authorization: token,
       ...extraHeaders,
     };
-
     const options = {
       method: method,
       headers: headers,
       ...extraOptions,
     };
-
     let response;
     try {
       response = await fetch(url, options);
@@ -44,14 +42,11 @@ export const createAirtableClient = ({ url, token }) => {
         'Network error. Check your internet connection and try again.'
       );
     }
-
     if (!response.ok) {
       throw new Error(getErrorByStatus(response.status));
     }
-
     const data = await response.json();
     return Array.isArray(data?.records) ? data.records : [];
   };
-
   return { request };
 };
