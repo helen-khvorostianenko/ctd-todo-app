@@ -1,7 +1,8 @@
 import './App.css';
 import styles from './App.module.css';
-import logo from './assets/todo-list-svgrepo-com.svg';
 import { useState, useEffect, useMemo, useCallback, useReducer } from 'react';
+import { useLocation } from 'react-router';
+import Header from './shared/Header';
 import TodosPage from './pages/TodosPage';
 import { airtableUrl, airtableToken } from './api/airtableConfig';
 import { createAirtableClient } from './api/airtableClient';
@@ -22,6 +23,8 @@ function App() {
   const [sortField, setSortField] = useState('createdTime');
   const [sortDirection, setSortDirection] = useState('desc');
   const [queryString, setQueryString] = useState('');
+  const [title, setTitle] = useState('');
+  const location = useLocation();
 
   const encodeUrl = useCallback(() => {
     let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
@@ -58,6 +61,16 @@ function App() {
     };
     fetchTodos();
   }, [airtable]);
+
+  useEffect(() => {
+    if (location.pathname == '/') {
+      setTitle('Todo List');
+    } else if (location.pathname == '/about') {
+      setTitle('About');
+    } else {
+      setTitle('Not Found');
+    }
+  }, [location.pathname]);
 
   const addTodo = async (title) => {
     const payload = {
@@ -125,7 +138,7 @@ function App() {
       dispatchTodoActions({
         type: todoActions.revertTodo,
         error: `${err.message}. Reverting todo...`,
-        editedTodo: editedTodo,
+        editedTodo: completedTodo,
       });
     }
   };
@@ -168,12 +181,7 @@ function App() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>
-        <span className={styles.titleRow}>
-          <img className={styles.logoImg} src={logo} alt="Todo logo" />
-          Todo List App
-        </span>
-      </h1>
+      <Header title={title}/>
       <TodosPage
         addTodo={addTodo}
         todoState={todoState}
