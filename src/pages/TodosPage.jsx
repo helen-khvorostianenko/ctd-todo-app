@@ -4,6 +4,7 @@ import styles from '../App.module.css';
 import TodoForm from '../features/TodoForm';
 import TodoList from '../features/TodoList/TodoList';
 import TodosViewForm from '../features/TodosViewForm';
+import {useSearchParams} from 'react-router';
 
 function TodosPage({
   addTodo,
@@ -19,7 +20,12 @@ function TodosPage({
 }) {
   const filteredTodoList = todoState.todoList.filter(
       (item) => item.isCompleted === false
-    );
+  );
+    const [searchParams, setSearchParams] = useSearchParams();
+    const itemsPerPage = 5;
+    const currentPage = parseInt(searchParams.get('page') || '1', 10);
+    const indexOfFirstTodo = (currentPage - 1) * itemsPerPage;
+    const totalPages = Math.ceil(filteredTodoList.length / itemsPerPage);
   
   return (
     <>
