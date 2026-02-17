@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo, useCallback, useReducer } from 'react';
 import { Route, Routes, useLocation } from 'react-router';
 import Header from './shared/Header';
 import TodosPage from './pages/TodosPage';
+import About from './pages/About';
+import NotFound from './pages/NotFound';
 import { airtableUrl, airtableToken } from './api/airtableConfig';
 import { createAirtableClient } from './api/airtableClient';
 import {
@@ -200,8 +202,8 @@ function App() {
             />
           }
         />
-        <Route path="/about" element = {<h1>About</h1>}/>
-        <Route path="/\*" element = {<h1>Not Found</h1>}/>
+        <Route path="/about" element={<About>About</About>} />
+        <Route path="*" element={<NotFound>Not Found</NotFound>} />
       </Routes>
       {todoState.errorMessage.length > 0 ? (
         <section className={`${styles.panel} ${styles.error}`}>
