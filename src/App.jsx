@@ -2,21 +2,27 @@ import './App.css';
 import styles from './App.module.css';
 import logo from './assets/todo-list-svgrepo-com.svg';
 import { useState, useEffect, useMemo, useCallback, useReducer } from 'react';
-import TodoList from './features/TodoList/TodoList';
-import TodoForm from './features/TodoForm';
-import TodosViewForm from './features/TodosViewForm';
+import TodosPage from './pages/TodosPage';
 import { airtableUrl, airtableToken } from './api/airtableConfig';
 import { createAirtableClient } from './api/airtableClient';
-import { reducer as todoReduser, actions as todoActions, initialState as initialTodoState, actions } from './reducers/todos.reducer';
+import {
+  reducer as todoReducer,
+  actions as todoActions,
+  initialState as initialTodoState,
+  actions,
+} from './reducers/todos.reducer';
 
 function App() {
-  // State for managing todo list and UI state   
-  const [todoState, dispatchTodoActions] = useReducer(todoReduser, initialTodoState);
+  // State for managing todo list and UI state
+  const [todoState, dispatchTodoActions] = useReducer(
+    todoReducer,
+    initialTodoState
+  );
 
   const [sortField, setSortField] = useState('createdTime');
   const [sortDirection, setSortDirection] = useState('desc');
   const [queryString, setQueryString] = useState('');
-  
+
   const encodeUrl = useCallback(() => {
     let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
     let searchQuery = '';
@@ -35,7 +41,7 @@ function App() {
 
   useEffect(() => {
     const fetchTodos = async () => {
-      dispatchTodoActions({type: todoActions.fetchTodos});
+      dispatchTodoActions({ type: todoActions.fetchTodos });
       try {
         const records = await airtable.request();
         dispatchTodoActions({
@@ -57,15 +63,15 @@ function App() {
     const payload = {
       records: [
         {
-          fields:{
+          fields: {
             title: title,
             isCompleted: false,
-          }
+          },
         },
       ],
     };
     try {
-      dispatchTodoActions({type: todoActions.startRequest});
+      dispatchTodoActions({ type: todoActions.startRequest });
       const records = await airtable.request(
         'POST',
         {
@@ -84,11 +90,11 @@ function App() {
         error: err,
       });
     } finally {
-       dispatchTodoActions({ type: todoActions.endRequest });
+      dispatchTodoActions({ type: todoActions.endRequest });
     }
-  }
+  };
 
-  const completeTodo = async(id) => {
+  const completeTodo = async (id) => {
     dispatchTodoActions({
       type: todoActions.completeTodo,
       id: id,
@@ -122,7 +128,7 @@ function App() {
         editedTodo: editedTodo,
       });
     }
-  }
+  };
 
   const updateTodo = async (editedTodo) => {
     dispatchTodoActions({
@@ -143,13 +149,13 @@ function App() {
     };
 
     try {
-    await airtable.request(
-      'PATCH',
-      {
-        'Content-Type': 'application/json',
-      },
-      { body: JSON.stringify(payload) }
-    );
+      await airtable.request(
+        'PATCH',
+        {
+          'Content-Type': 'application/json',
+        },
+        { body: JSON.stringify(payload) }
+      );
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       dispatchTodoActions({
@@ -158,11 +164,7 @@ function App() {
         editedTodo: editedTodo,
       });
     }
-  }
-
-  const filteredTodoList = todoState.todoList.filter(
-    (item) => item.isCompleted === false
-  );
+  };
 
   return (
     <div className={styles.container}>
@@ -172,33 +174,26 @@ function App() {
           Todo List App
         </span>
       </h1>
-      <section className={styles.panel}>
-        <TodoForm onAddTodo={addTodo} isSaving={todoState.isSaving} />
-      </section>
-      <section className={styles.panel}>
-        <TodoList
-          todoList={filteredTodoList}
-          onCompleteTodo={completeTodo}
-          onUpdateTodo={updateTodo}
-          isLoading={todoState.isLoading}
-        />
-      </section>
-      <section className={styles.panel}>
-        <TodosViewForm
-          sortDirection={sortDirection}
-          setSortDirection={setSortDirection}
-          sortField={sortField}
-          setSortField={setSortField}
-          queryString={queryString}
-          setQueryString={setQueryString}
-        />
-      </section>
+      <TodosPage
+        addTodo={addTodo}
+        todoState={todoState}
+        completeTodo={completeTodo}
+        updateTodo={updateTodo}
+        sortDirection={sortDirection}
+        setSortDirection={setSortDirection}
+        sortField={sortField}
+        setSortField={setSortField}
+        queryString={queryString}
+        setQueryString={setQueryString}
+      />
       {todoState.errorMessage.length > 0 ? (
         <section className={`${styles.panel} ${styles.error}`}>
           <p className={styles.errorText}>{todoState.errorMessage}</p>
           <button
             className={`btn ${styles.ghostButton}`}
-            onClick={() => dispatchTodoActions({type: todoActions.clearError})}
+            onClick={() =>
+              dispatchTodoActions({ type: todoActions.clearError })
+            }
           >
             Dismiss
           </button>
