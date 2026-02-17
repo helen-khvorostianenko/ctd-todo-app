@@ -1,7 +1,7 @@
 import './App.css';
 import styles from './App.module.css';
 import { useState, useEffect, useMemo, useCallback, useReducer } from 'react';
-import { useLocation } from 'react-router';
+import { Route, Routes, useLocation } from 'react-router';
 import Header from './shared/Header';
 import TodosPage from './pages/TodosPage';
 import { airtableUrl, airtableToken } from './api/airtableConfig';
@@ -181,19 +181,28 @@ function App() {
 
   return (
     <div className={styles.container}>
-      <Header title={title}/>
-      <TodosPage
-        addTodo={addTodo}
-        todoState={todoState}
-        completeTodo={completeTodo}
-        updateTodo={updateTodo}
-        sortDirection={sortDirection}
-        setSortDirection={setSortDirection}
-        sortField={sortField}
-        setSortField={setSortField}
-        queryString={queryString}
-        setQueryString={setQueryString}
-      />
+      <Header title={title} />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <TodosPage
+              addTodo={addTodo}
+              todoState={todoState}
+              completeTodo={completeTodo}
+              updateTodo={updateTodo}
+              sortDirection={sortDirection}
+              setSortDirection={setSortDirection}
+              sortField={sortField}
+              setSortField={setSortField}
+              queryString={queryString}
+              setQueryString={setQueryString}
+            />
+          }
+        />
+        <Route path="/about" element = {<h1>About</h1>}/>
+        <Route path="/\*" element = {<h1>Not Found</h1>}/>
+      </Routes>
       {todoState.errorMessage.length > 0 ? (
         <section className={`${styles.panel} ${styles.error}`}>
           <p className={styles.errorText}>{todoState.errorMessage}</p>
