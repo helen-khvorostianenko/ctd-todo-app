@@ -1,22 +1,33 @@
 import './App.css';
 import styles from './App.module.css';
-import logo from './assets/todo-list-svgrepo-com.svg';
 import { useState, useEffect, useMemo, useCallback, useReducer } from 'react';
-import TodoList from './features/TodoList/TodoList';
-import TodoForm from './features/TodoForm';
-import TodosViewForm from './features/TodosViewForm';
+import { Route, Routes, useLocation } from 'react-router';
+import Header from './shared/Header';
+import TodosPage from './pages/TodosPage';
+import About from './pages/About';
+import NotFound from './pages/NotFound';
 import { airtableUrl, airtableToken } from './api/airtableConfig';
 import { createAirtableClient } from './api/airtableClient';
-import { reducer as todoReduser, actions as todoActions, initialState as initialTodoState, actions } from './reducers/todos.reducer';
+import {
+  reducer as todoReducer,
+  actions as todoActions,
+  initialState as initialTodoState,
+  actions,
+} from './reducers/todos.reducer';
 
 function App() {
-  // State for managing todo list and UI state   
-  const [todoState, dispatchTodoActions] = useReducer(todoReduser, initialTodoState);
+  // State for managing todo list and UI state
+  const [todoState, dispatchTodoActions] = useReducer(
+    todoReducer,
+    initialTodoState
+  );
 
   const [sortField, setSortField] = useState('createdTime');
   const [sortDirection, setSortDirection] = useState('desc');
   const [queryString, setQueryString] = useState('');
-  
+  const [title, setTitle] = useState('');
+  const location = useLocation();
+
   const encodeUrl = useCallback(() => {
     let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
     let searchQuery = '';
@@ -35,7 +46,7 @@ function App() {
 
   useEffect(() => {
     const fetchTodos = async () => {
-      dispatchTodoActions({type: todoActions.fetchTodos});
+      dispatchTodoActions({ type: todoActions.fetchTodos });
       try {
         const records = await airtable.request();
         dispatchTodoActions({
@@ -53,19 +64,29 @@ function App() {
     fetchTodos();
   }, [airtable]);
 
+  useEffect(() => {
+    if (location.pathname == '/') {
+      setTitle('Todo List');
+    } else if (location.pathname == '/about') {
+      setTitle('About');
+    } else {
+      setTitle('Not Found');
+    }
+  }, [location.pathname]);
+
   const addTodo = async (title) => {
     const payload = {
       records: [
         {
-          fields:{
+          fields: {
             title: title,
             isCompleted: false,
-          }
+          },
         },
       ],
     };
     try {
-      dispatchTodoActions({type: todoActions.startRequest});
+      dispatchTodoActions({ type: todoActions.startRequest });
       const records = await airtable.request(
         'POST',
         {
@@ -84,11 +105,11 @@ function App() {
         error: err,
       });
     } finally {
-       dispatchTodoActions({ type: todoActions.endRequest });
+      dispatchTodoActions({ type: todoActions.endRequest });
     }
-  }
+  };
 
-  const completeTodo = async(id) => {
+  const completeTodo = async (id) => {
     dispatchTodoActions({
       type: todoActions.completeTodo,
       id: id,
@@ -119,10 +140,10 @@ function App() {
       dispatchTodoActions({
         type: todoActions.revertTodo,
         error: `${err.message}. Reverting todo...`,
-        editedTodo: editedTodo,
+        editedTodo: completedTodo,
       });
     }
-  }
+  };
 
   const updateTodo = async (editedTodo) => {
     dispatchTodoActions({
@@ -143,13 +164,13 @@ function App() {
     };
 
     try {
-    await airtable.request(
-      'PATCH',
-      {
-        'Content-Type': 'application/json',
-      },
-      { body: JSON.stringify(payload) }
-    );
+      await airtable.request(
+        'PATCH',
+        {
+          'Content-Type': 'application/json',
+        },
+        { body: JSON.stringify(payload) }
+      );
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       dispatchTodoActions({
@@ -158,47 +179,40 @@ function App() {
         editedTodo: editedTodo,
       });
     }
-  }
-
-  const filteredTodoList = todoState.todoList.filter(
-    (item) => item.isCompleted === false
-  );
+  };
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>
-        <span className={styles.titleRow}>
-          <img className={styles.logoImg} src={logo} alt="Todo logo" />
-          Todo List App
-        </span>
-      </h1>
-      <section className={styles.panel}>
-        <TodoForm onAddTodo={addTodo} isSaving={todoState.isSaving} />
-      </section>
-      <section className={styles.panel}>
-        <TodoList
-          todoList={filteredTodoList}
-          onCompleteTodo={completeTodo}
-          onUpdateTodo={updateTodo}
-          isLoading={todoState.isLoading}
+      <Header title={title} />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <TodosPage
+              addTodo={addTodo}
+              todoState={todoState}
+              completeTodo={completeTodo}
+              updateTodo={updateTodo}
+              sortDirection={sortDirection}
+              setSortDirection={setSortDirection}
+              sortField={sortField}
+              setSortField={setSortField}
+              queryString={queryString}
+              setQueryString={setQueryString}
+            />
+          }
         />
-      </section>
-      <section className={styles.panel}>
-        <TodosViewForm
-          sortDirection={sortDirection}
-          setSortDirection={setSortDirection}
-          sortField={sortField}
-          setSortField={setSortField}
-          queryString={queryString}
-          setQueryString={setQueryString}
-        />
-      </section>
+        <Route path="/about" element={<About>About</About>} />
+        <Route path="*" element={<NotFound>Not Found</NotFound>} />
+      </Routes>
       {todoState.errorMessage.length > 0 ? (
         <section className={`${styles.panel} ${styles.error}`}>
           <p className={styles.errorText}>{todoState.errorMessage}</p>
           <button
             className={`btn ${styles.ghostButton}`}
-            onClick={() => dispatchTodoActions({type: todoActions.clearError})}
+            onClick={() =>
+              dispatchTodoActions({ type: todoActions.clearError })
+            }
           >
             Dismiss
           </button>
