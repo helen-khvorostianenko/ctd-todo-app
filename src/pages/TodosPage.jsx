@@ -23,7 +23,7 @@ function TodosPage({
       (item) => item.isCompleted === false
   );
   const [searchParams, setSearchParams] = useSearchParams();
-  const itemsPerPage = 5;
+  const itemsPerPage = 15;
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const indexOfFirstTodo = (currentPage - 1) * itemsPerPage;
   const totalPages = Math.ceil(filteredTodoList.length / itemsPerPage) || 1;
@@ -40,13 +40,20 @@ function TodosPage({
     setSearchParams({ page: String(nextPage) });
   }
 
+  const indexOflastEntery = currentPage * itemsPerPage;
   const currentTodos = filteredTodoList.slice(
     indexOfFirstTodo,
-    indexOfFirstTodo + itemsPerPage
+    indexOflastEntery
   );
   
   useEffect(() => {
-    if (currentPage < 1 || currentPage > totalPages || isNaN(currentPage)) {
+    if (totalPages === 0) return;
+    if (
+      currentPage < 1 ||
+      currentPage > totalPages ||
+      typeof currentPage !== 'number' ||
+      Number.isNaN(currentPage)
+    ) {
       navigate('/');
     }
   }, [currentPage, totalPages, navigate]);
