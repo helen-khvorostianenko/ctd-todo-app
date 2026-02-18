@@ -1,10 +1,11 @@
+import { useEffect } from 'react';
 import '../App.css';
 import styles from '../App.module.css';
 
 import TodoForm from '../features/TodoForm';
 import TodoList from '../features/TodoList/TodoList';
 import TodosViewForm from '../features/TodosViewForm';
-import {useSearchParams} from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 
 function TodosPage({
   addTodo,
@@ -27,6 +28,8 @@ function TodosPage({
   const indexOfFirstTodo = (currentPage - 1) * itemsPerPage;
   const totalPages = Math.ceil(filteredTodoList.length / itemsPerPage) || 1;
 
+  const navigate = useNavigate();
+
   function handlePreviousPage() {
     const prevPage = Math.max(1, currentPage - 1);
     setSearchParams({ page: String(prevPage) });
@@ -42,6 +45,12 @@ function TodosPage({
     indexOfFirstTodo + itemsPerPage
   );
   
+  useEffect(() => {
+    if (currentPage < 1 || currentPage > totalPages || isNaN(currentPage)) {
+      navigate('/');
+    }
+  }, [currentPage, totalPages, navigate]);
+
   return (
     <>
       <section className={styles.panel}>
@@ -57,13 +66,21 @@ function TodosPage({
       </section>
       <section>
         <div className={styles.paginationControls}>
-          <button className="btn btnPrimary" onClick={handlePreviousPage}>
+          <button
+            className="btn btnPrimary"
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+          >
             Previous
           </button>
           <span>
             Page {currentPage} of {totalPages}
           </span>
-          <button className="btn btnPrimary" onClick={handleNextPage}>
+          <button
+            className="btn btnPrimary"
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+          >
             Next
           </button>
         </div>
